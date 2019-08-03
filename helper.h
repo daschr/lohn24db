@@ -4,4 +4,5 @@ int str_repl(char *buffer, size_t bufsize,const char *string,const char *tbstrin
 int is_pos_num(char *s);
 void blame(char *f, ...);
 int readline(char *buffer, FILE *fd);
+int is_alphanum(char *s);
 const char *get_option(int i);

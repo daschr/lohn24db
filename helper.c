@@ -4,10 +4,19 @@
 #include <stdint.h>
 #include <string.h>
 #define IS_NUM(X) ( 48 <= X && X <= 57 ) 
+#define IS_ALPHA(X) ((65 <= X && X <= 90) || (97 <= X && X <= 122))
 
 #ifndef INC_LOHN24PG
 	#include "lohn24pg.h"
 #endif
+
+int is_alphanum(char *s){
+	for(size_t i=0;s[i] != '\0';++i)
+		if(!IS_NUM(s[i]) && !IS_ALPHA(s[i]))
+			return 0;
+	return 1;
+}
+
 
 int str_repl(char *buffer, size_t bufsize,const char *string,const char *tbstring,const char *replstring){
 //        printf("%s | %s | %s \n",string,tbstring,replstring);
@@ -54,6 +63,7 @@ void blame(char *f, ...){
 	va_end(args); 
 	if(db_connection != NULL)
  	      PQfinish(db_connection);
+	free_config();
 	exit(EXIT_FAILURE);
 }
 

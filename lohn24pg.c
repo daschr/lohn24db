@@ -40,6 +40,10 @@ int auth_callback (const struct _u_request * request, struct _u_response * respo
 		ulfius_set_string_body_response(response, 401, "unauthorized\n");
 		return U_CALLBACK_CONTINUE;
 	}
+	if(!is_alphanum(request->auth_basic_user) || !is_alphanum(request->auth_basic_password)){
+		ulfius_set_string_body_response(response, 401, "nice try ;)\n");
+		return U_CALLBACK_CONTINUE;
+	}
 	printf("attempt with %s | %s\n",request->auth_basic_user, request->auth_basic_password);
 
 	if(check_password((const char *) request->auth_basic_user,(const char *)request->auth_basic_password))
