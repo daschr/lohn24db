@@ -48,6 +48,9 @@ void parse_config(){
 		IS("sql_cmd"){
 			strncpy(config.sql_cmd,nparm,2048);
 			conf_flags^=GOT_SQL;
+		}else IS("callback_path"){
+			strncpy(config.callback_path,nparm,256);
+			conf_flags^=GOT_CALLPATH;
 		}else IS("port"){
 			if((config.port=is_pos_num(nparm)) == -1){
 				fclose(conf);
@@ -68,23 +71,41 @@ void parse_config(){
 }
 
 void check_config(){
-	for(int i=1;i<8;i=i<<1)
+	for(int i=1;i<16;i=i<<1)
 		if(! ( conf_flags & i ))
 			blame("Error: missing option '%s' in config file!\n",get_option(i));	
 }
 
 int parse_pg_param(char *conf){
+	static size_t cursize=0;	
 	static size_t rnum=0;
-	printf("rnum: %lu\n",rnum);
 	if(rnum == PG_MAX)
 		return 0;
+	
+	if(cursize == 0){
+		cursize+=2;
+		config.pg_params=malloc(sizeof(char *)*cursize);
+		config.pg_values=malloc(sizeof(char *)*cursize);
+	}else{
+		++cursize;
+		config.pg_params=realloc(config.pg_params,sizeof(char *)*cursize);
+		config.pg_values=realloc(config.pg_values,sizeof(char *)*cursize);
+	}
+	config.pg_params[rnum+1]=NULL;
+	config.pg_values[rnum+1]=NULL;
+	
+	printf("rnum: %lu\n",rnum);
+	
 	size_t pos=0;
 	for(;conf[pos] != '\0' && conf[pos]!=':';++pos);
 	if(conf[pos]!=':')
 		return 0;
+
+	config.pg_params[rnum]=malloc((pos+2)*sizeof(char));
 	strncpy(config.pg_params[rnum],conf,pos);
 	config.pg_params[rnum][pos]='\0';
-	strcpy(config.pg_values[rnum],conf+pos+1);
+	
+	config.pg_values[rnum]=strdup(conf+pos+1);
 	#ifdef DEBUG
 		printf("pg_param: '%s' pg_value: '%s'\n",config.pg_params[rnum],config.pg_values[rnum]);
 	#endif

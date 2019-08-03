@@ -19,14 +19,17 @@ char *conf_path;
 #define PG_STS 256
 
 
-enum { GOT_SQL=1,GOT_PGOPTS=2,GOT_PORT=4 };
+enum { GOT_SQL=1,GOT_PGOPTS=2,GOT_PORT=4,GOT_CALLPATH=8 };
 int conf_flags;
 
 struct {
 	char sql_cmd[2048];
 	int port;
-	char pg_params[PG_MAX][PG_STS];
-	char pg_values[PG_MAX][PG_STS];
+	char **pg_params;
+	char **pg_values;
+//	char pg_params[PG_MAX][PG_STS];
+//	char pg_values[PG_MAX][PG_STS];
+	char callback_path[256];
 } config;
 
 //holds db connection

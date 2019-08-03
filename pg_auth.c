@@ -7,18 +7,22 @@
 #endif
 
 #include </usr/include/postgresql/libpq-fe.h>
-int connect_db(void){
-        db_connection=PQconnectdbParams((const char * const*)config.pg_params,(const char* const *)config.pg_values,0);
-        
-        if(db_connection == NULL)
-                return 0;
-        if(PQstatus(db_connection) != CONNECTION_OK)
-                return 1;
-        return 0;
+#include <openssl/md5.h>
+#include <string.h>
+void md5_hash(const char *s, char *o){
+	unsigned char hash[16];
+	MD5((const unsigned char *)s,strlen(s),hash);
+	for(int i=0;i<16;++i)
+		sprintf(&o[i*2],"%02x",(unsigned int) hash[i]);
 }
 
-char *generate_hash(const char *pw){
-	return "hui";
+int connect_db(void){
+	db_connection=PQconnectdbParams((const char * const*)config.pg_params,(const char* const *)config.pg_values,0);
+        if(db_connection == NULL)
+                return 0;
+        if(PQstatus(db_connection) == CONNECTION_OK)
+                return 1;
+        return 0;
 }
 
 int check_password(const char * username, const char * password) {
@@ -26,7 +30,8 @@ int check_password(const char * username, const char * password) {
 		if(!connect_db())
 			return 0;
 	
-	char *hash=generate_hash(password);
+	char hash[33];
+	md5_hash(password,hash);
 	char cmd_buffer1[BUFSIZE];
 	char cmd_buffer2[BUFSIZE];
 	
@@ -35,6 +40,9 @@ int check_password(const char * username, const char * password) {
 		return 0;
 	if(!str_repl(cmd_buffer2,BUFSIZE,cmd_buffer2,hash_repl,hash))
 		return 0;
+	#ifdef DEBUG
+		printf("cmd_buffer2: %s\n",cmd_buffer2);
+	#endif
 	PGresult *res=PQexec(db_connection,cmd_buffer2);
 	
 	return (PQresultStatus(res) == PGRES_COMMAND_OK);

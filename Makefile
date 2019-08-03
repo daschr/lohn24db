@@ -1,5 +1,5 @@
 CC=clang
-FLAGS=-DDEBUG -lulfius -lpq
+FLAGS=-DDEBUG -lcrypto -lulfius -lpq
 
 all:	*.c
 	$(CC) $(FLAGS) -o lohn24pg  $^

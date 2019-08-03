@@ -23,6 +23,15 @@ void closer(int c){
 	close_app=1;
 }
 
+void free_config(){
+	for(size_t i=0;config.pg_params[i] != NULL;++i){
+		free(config.pg_params[i]);
+		free(config.pg_values[i]);
+	}
+	free(config.pg_values);
+	free(config.pg_params);
+}
+
 int auth_callback (const struct _u_request * request, struct _u_response * response, void * user_data) {
 	ulfius_set_string_body_response(response, 200, "Hello World!");
 	return U_CALLBACK_CONTINUE;
@@ -38,14 +47,20 @@ int main(int ac, char *as[]) {
 
 	parse_config();
 	check_config();
-
+	
+	if(!connect_db()){
+		if(db_connection != NULL)
+			PQfinish(db_connection);
+		blame("Error: could not connect to database!\n");
+	}
+	
 	struct _u_instance instance;
 
 	// Initialize instance with the port number
 	if (ulfius_init_instance(&instance, config.port, NULL, NULL) != U_OK)
 		blame("Error ulfius_init_instance, abort\n");
 
-	ulfius_add_endpoint_by_val(&instance, "GET", "/auth", NULL, 0, &auth_callback, NULL);
+	ulfius_add_endpoint_by_val(&instance, "GET", config.callback_path, NULL, 0, &auth_callback, NULL);
 
 	if (ulfius_start_framework(&instance) == U_OK) {
 		printf("%s started on %d\n",as[0], instance.port);
@@ -58,6 +73,8 @@ int main(int ac, char *as[]) {
 	puts("stopping...");
 	ulfius_stop_framework(&instance);
 	ulfius_clean_instance(&instance);
-
+	if(db_connection != NULL)
+		PQfinish(db_connection);
+	free_config();	
 	return 0;
 }

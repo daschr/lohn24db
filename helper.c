@@ -72,6 +72,7 @@ const char *get_option(int i){
 		case GOT_SQL:	  return "sql_command";
 		case GOT_PGOPTS:  return "postgres_options";
 		case GOT_PORT:    return "port";
+		case GOT_CALLPATH: return "callback_path";
 		default:	  return "unkown";
 	}
 }
