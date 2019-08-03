@@ -10,7 +10,8 @@
 #endif
 
 int str_repl(char *buffer, size_t bufsize,const char *string,const char *tbstring,const char *replstring){
-        size_t strpos=0;
+//        printf("%s | %s | %s \n",string,tbstring,replstring);
+	size_t strpos=0;
         size_t bufferpos=0;
         size_t tbstringl=strlen(tbstring);
         while(string[strpos] != '\0' && bufferpos < bufsize){

@@ -33,7 +33,16 @@ void free_config(){
 }
 
 int auth_callback (const struct _u_request * request, struct _u_response * response, void * user_data) {
-	ulfius_set_string_body_response(response, 200, "Hello World!");
+	if(request->auth_basic_user == NULL || request->auth_basic_password == NULL){
+		ulfius_set_string_body_response(response, 401, "unauthorized");
+		return U_CALLBACK_CONTINUE;
+	}
+	printf("attempt with %s | %s\n",request->auth_basic_user, request->auth_basic_password);
+
+	if(check_password((const char *) request->auth_basic_user,(const char *)request->auth_basic_password))
+		ulfius_set_string_body_response(response, 200, "authorized");
+	else
+		ulfius_set_string_body_response(response, 401, "unauthorized");
 	return U_CALLBACK_CONTINUE;
 }
 

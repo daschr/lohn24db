@@ -17,6 +17,8 @@ void md5_hash(const char *s, char *o){
 }
 
 int connect_db(void){
+	if(db_connection != NULL)
+		PQfinish(db_connection);
 	db_connection=PQconnectdbParams((const char * const*)config.pg_params,(const char* const *)config.pg_values,0);
         if(db_connection == NULL)
                 return 0;
@@ -38,12 +40,12 @@ int check_password(const char * username, const char * password) {
 	
 	if(!str_repl(cmd_buffer1,BUFSIZE,config.sql_cmd,user_repl,username))
 		return 0;
-	if(!str_repl(cmd_buffer2,BUFSIZE,cmd_buffer2,hash_repl,hash))
+	if(!str_repl(cmd_buffer2,BUFSIZE,cmd_buffer1,hash_repl,hash))
 		return 0;
 	#ifdef DEBUG
 		printf("cmd_buffer2: %s\n",cmd_buffer2);
 	#endif
 	PGresult *res=PQexec(db_connection,cmd_buffer2);
 	
-	return (PQresultStatus(res) == PGRES_COMMAND_OK);
+	return ( res != NULL &&  PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) != 0 );
 }
