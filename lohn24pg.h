@@ -37,5 +37,4 @@ struct {
 PGconn *db_connection;
 int close_app;
 
-
-
+void free_config();
