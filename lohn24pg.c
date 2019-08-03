@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <ulfius.h>
+#include <signal.h>
+#include <string.h>
+#include <time.h>
+#include </usr/include/postgresql/libpq-fe.h>
+
+#include "lohn24pg.h"
+#include "helper.h"
+#include "parse_config.h"
+#include "pg_auth.h"
+
+
+int close_app=0;
+char *conf_path=NULL;
+
+char *user_repl=USER_REPL;
+char *hash_repl=HASH_REPL;
+
+PGconn *db_connection=NULL;
+
+void closer(int c){
+	close_app=1;
+}
+
+int auth_callback (const struct _u_request * request, struct _u_response * response, void * user_data) {
+	ulfius_set_string_body_response(response, 200, "Hello World!");
+	return U_CALLBACK_CONTINUE;
+}
+
+int main(int ac, char *as[]) {
+	signal(SIGINT,closer);
+	signal(SIGTERM,closer);
+	
+	if(ac != 2)
+		blame("Usage: %s [config]\n",as[0]);
+	conf_path=as[1];
+
+	parse_config();
+	check_config();
+
+	struct _u_instance instance;
+
+	// Initialize instance with the port number
+	if (ulfius_init_instance(&instance, config.port, NULL, NULL) != U_OK)
+		blame("Error ulfius_init_instance, abort\n");
+
+	ulfius_add_endpoint_by_val(&instance, "GET", "/auth", NULL, 0, &auth_callback, NULL);
+
+	if (ulfius_start_framework(&instance) == U_OK) {
+		printf("%s started on %d\n",as[0], instance.port);
+			
+		while(!close_app)
+			usleep(500);
+	} else
+		fprintf(stderr, "Error starting %s\n",as[1]);
+	
+	puts("stopping...");
+	ulfius_stop_framework(&instance);
+	ulfius_clean_instance(&instance);
+
+	return 0;
+}
