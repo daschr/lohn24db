@@ -51,6 +51,9 @@ void parse_config(){
 		}else IS("callback_path"){
 			strncpy(config.callback_path,nparm,256);
 			conf_flags^=GOT_CALLPATH;
+		}else IS("addr"){
+			strncpy(config.addr,nparm,256);
+			conf_flags^=GOT_ADDR;
 		}else IS("port"){
 			if((config.port=is_pos_num(nparm)) == -1){
 				fclose(conf);
@@ -71,7 +74,7 @@ void parse_config(){
 }
 
 void check_config(){
-	for(int i=1;i<16;i=i<<1)
+	for(int i=1;i<32;i=i<<1)
 		if(! ( conf_flags & i ))
 			blame("Error: missing option '%s' in config file!\n",get_option(i));	
 }
