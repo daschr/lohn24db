@@ -52,6 +52,8 @@ void blame(char *f, ...){
 	vfprintf(stderr,f,args);
 
 	va_end(args); 
+	if(db_connection != NULL)
+ 	      PQfinish(db_connection);
 	exit(EXIT_FAILURE);
 }
 
@@ -74,6 +76,7 @@ const char *get_option(int i){
 		case GOT_PGOPTS:  return "postgres_options";
 		case GOT_PORT:    return "port";
 		case GOT_CALLPATH: return "callback_path";
+		case GOT_ADDR:	  return "addr";
 		default:	  return "unkown";
 	}
 }

@@ -19,7 +19,7 @@ char *conf_path;
 #define PG_STS 256
 
 
-enum { GOT_SQL=1,GOT_PGOPTS=2,GOT_PORT=4,GOT_CALLPATH=8 };
+enum { GOT_SQL=1,GOT_PGOPTS=2,GOT_PORT=4,GOT_CALLPATH=8, GOT_ADDR=16};
 int conf_flags;
 
 struct {
@@ -27,6 +27,7 @@ struct {
 	int port;
 	char **pg_params;
 	char **pg_values;
+	char addr[256];
 //	char pg_params[PG_MAX][PG_STS];
 //	char pg_values[PG_MAX][PG_STS];
 	char callback_path[256];
