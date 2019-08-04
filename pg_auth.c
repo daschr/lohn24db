@@ -57,5 +57,8 @@ int check_password(const char * username, const char * password) {
 	#endif
 	PGresult *res=PQexec(db_connection,cmd_buffer2);
 	
-	return ( res != NULL &&  PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) != 0 );
+	int comp= (res != NULL &&  PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) != 0 );
+	if(res != NULL)
+		PQclear(res);
+	return comp;
 }
