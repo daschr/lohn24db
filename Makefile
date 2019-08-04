@@ -1,5 +1,5 @@
 CC=clang
-FLAGS=-DDEBUG -lcrypto -lulfius -lpq
+FLAGS=-DDEBUG -lcrypt -lulfius -lpq
 #FLAGS=-lcrypto -lulfius -lpq
 
 all:	*.c
