@@ -97,8 +97,6 @@ int parse_pg_param(char *conf){
 	config.pg_params[rnum+1]=NULL;
 	config.pg_values[rnum+1]=NULL;
 	
-	printf("rnum: %lu\n",rnum);
-	
 	size_t pos=0;
 	for(;conf[pos] != '\0' && conf[pos]!=':';++pos);
 	if(conf[pos]!=':')
