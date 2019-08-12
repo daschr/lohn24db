@@ -70,8 +70,11 @@ int main(int ac, char *as[]) {
 	signal(SIGINT,closer);
 	signal(SIGTERM,closer);
 	
-	if(ac != 2)
-		blame("Usage: %s [config]\n",as[0]);
+	if(ac != 2){
+		fprintf(stderr,"Usage: %s [config]\n",as[0]);
+		exit(EXIT_FAILURE);
+	}
+
 	conf_path=as[1];
 
 	parse_config();
