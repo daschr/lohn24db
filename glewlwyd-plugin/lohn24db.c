@@ -318,7 +318,7 @@ json_t * user_module_get(struct config_module * config, const char * username, v
 	UNUSED(username);
 	UNUSED(cls);
 	DBG("module get");
-	return json_pack("{sis{sssOso}}", "result", G_OK, "user", "username", username, "scope", config->profile_scope, "default-scope"), "enabled", json_true());
+	return json_pack("{sis{sssOso}}", "result", G_OK, "user", "username", username, "scope", config->profile_scope, "enabled", json_true());
 }
 
 /**
