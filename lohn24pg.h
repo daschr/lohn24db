@@ -28,8 +28,6 @@ struct {
 	char **pg_params;
 	char **pg_values;
 	char addr[256];
-//	char pg_params[PG_MAX][PG_STS];
-//	char pg_values[PG_MAX][PG_STS];
 	char callback_path[256];
 } config;
 
