@@ -22,7 +22,11 @@ char *md5_hash(const char *user,const char *pw,struct crypt_data *d){
 int connect_db(conf *config){
 	if(config->db_connection != NULL)
 		PQfinish(config->db_connection);
-	config->db_connection=PQconnectdbParams((const char * const*)config->pg_params,(const char* const *)config->pg_values,0);
+	
+	printf("%s\n",pg_params[0]);
+	for(size_t i=0; pg_params[i] != NULL; ++i)
+		printf("%s %s\n",pg_params[i],pg_values[i]);
+	config->db_connection=PQconnectdbParams((const char * const*)pg_params,(const char* const *)pg_values,0);
         if(config->db_connection == NULL)
                 return 0;
         if(PQstatus(config->db_connection) == CONNECTION_OK)

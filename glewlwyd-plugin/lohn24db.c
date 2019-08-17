@@ -11,6 +11,10 @@
 const char *user_repl=USER_REPL;
 const char *hash_repl=HASH_REPL;
 
+	char *pg_params[5]={"dbname","host","user","password",NULL};
+	char *pg_values[5]={"users","schlepp","test","test",NULL};
+
+
 #define DBG(X) y_log_message(Y_LOG_LEVEL_DEBUG, X);
 
 /**
@@ -92,7 +96,7 @@ const char *hash_repl=HASH_REPL;
 json_t * user_module_load(struct config_module * config) {
 	UNUSED(config);
 	y_log_message(Y_LOG_LEVEL_DEBUG, "called load");
-	return json_pack("{sisssssss{s{sssb}s{sssb}}}",
+	return json_pack("{sisssssss{}}",
                    "result",
                    G_OK,
                    "name",
@@ -101,17 +105,7 @@ json_t * user_module_load(struct config_module * config) {
                    "Lohn24 Database",
                    "description",
                    "Lohn24 Database connection",
-                   "parameters",
-                     "connectionparams",
-                       "type",
-                       "string",
-                       "mandatory",
-                       1,
-                     "sql_cmd",
-                       "type",
-                       "string",
-                       "mandatory",
-                       1);
+                   "parameters");
 }
 
 /**
@@ -165,7 +159,7 @@ json_t * user_module_init(struct config_module * mod_conf, int readonly, json_t 
 	conf *config=malloc(sizeof(conf));
 
 	json_t * j_return;
-		
+	/*	
 	if(json_object_get(j_parameters, "error") == NULL){
 		
 		size_t slen;
@@ -200,7 +194,9 @@ json_t * user_module_init(struct config_module * mod_conf, int readonly, json_t 
 	}else
 		j_return=json_pack("{sis[s]}", "result", G_ERROR_PARAM, "error", 
 						"Error input parameters");
-	
+	*/
+
+	strcpy(config->sql_cmd,"SELECT 1 from userlist where name=E'{{username}}' AND password=E'{{hash}}'");	
 	if(!connect_db(config))
 		return json_pack("{sis[s]}", "result", G_ERROR_PARAM, "error", 
 						"Could not connect to database");
@@ -318,7 +314,7 @@ json_t * user_module_get(struct config_module * config, const char * username, v
 	UNUSED(username);
 	UNUSED(cls);
 	DBG("module get");
-	return json_pack("{sis{sssOso}}", "result", G_OK, "user", "username", username, "scope", json_object_get((json_t *)cls, "default-scope"), "enabled", json_true());
+	return json_pack("{sis{ssss}}", "result", G_OK, "user", "username", username, "scope", "default-scope");
 }
 
 /**
@@ -499,15 +495,16 @@ int user_module_delete(struct config_module * config, const char * username, voi
  * 
  */
 int user_module_check_password(struct config_module * mod_conf, const char * username, const char * password, void * cls) {
+	DBG("here");
 	conf *config=(conf *) cls;
 	
 
 	char esc_user[512];
 	char esc_user2[512];
-	
+	DBG("here2");
 	str_repl(esc_user2,512,username,"\\","\\\\");
 	str_repl(esc_user,512,esc_user2,"'","''");
-
+	DBG("here3");
 	return check_password(config,(const char *)esc_user,password) ?  G_OK : G_ERROR_UNAUTHORIZED;
 
 }

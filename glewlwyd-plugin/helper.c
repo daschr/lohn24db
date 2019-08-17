@@ -13,7 +13,7 @@
 
 
 int parse_pg_param(conf *config,char *conn){
-	static size_t cursize=0;	
+/*	static size_t cursize=0;	
 	static size_t rnum=0;
 	if(rnum == PG_MAX)
 		return 0;
@@ -45,6 +45,8 @@ int parse_pg_param(conf *config,char *conn){
 	#endif
 	++rnum;
 	return 1;
+*/
+	return 1;
 }
 
 
@@ -56,13 +58,13 @@ int is_alphanum(char *s){
 }
 
 void free_config(conf *config){
-	for(size_t i=0;config->pg_params[i] != NULL;++i){
+/*	for(size_t i=0;config->pg_params[i] != NULL;++i){
 		free(config->pg_params[i]);
 		free(config->pg_values[i]);
 	}
 	free(config->pg_values);
 	free(config->pg_params);
-	free(config);
+*/	free(config);
 }
 
 int str_repl(char *buffer, size_t bufsize,const char *string,const char *tbstring,const char *replstring){

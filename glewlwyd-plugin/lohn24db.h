@@ -11,14 +11,14 @@
 
 const char *user_repl;
 const char *hash_repl;
-
+char *pg_params[5];
+char *pg_values[5];
+	
 #define PG_MAX 12
 #define PG_STS 256
 
 typedef struct {
 	char sql_cmd[BUFSIZE];
-	char **pg_params;
-	char **pg_values;
 	PGconn *db_connection;
 } conf;
 
