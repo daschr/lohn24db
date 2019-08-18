@@ -12,38 +12,39 @@
 #endif
 
 
-int parse_pg_param(conf *config,char *conn){
-	static size_t cursize=0;	
-	static size_t rnum=0;
-	if(rnum == PG_MAX)
+int parse_pg_param(size_t *cursize, conf *config,char *conn){
+	if(*cursize > PG_MAX)
 		return 0;
 	
-	if(cursize == 0){
-		cursize+=2;
-		config->pg_params=malloc(sizeof(char *)*cursize);
-		config->pg_values=malloc(sizeof(char *)*cursize);
+	if(*cursize == 0){
+		*cursize=2;
+		config->pg_params=malloc(sizeof(char *)* (*cursize));
+		config->pg_values=malloc(sizeof(char *)* (*cursize));
 	}else{
-		++cursize;
-		config->pg_params=realloc(config->pg_params,sizeof(char *)*cursize);
-		config->pg_values=realloc(config->pg_values,sizeof(char *)*cursize);
+		++(*cursize);
+		config->pg_params=realloc(config->pg_params,sizeof(char *)* (*cursize));
+		config->pg_values=realloc(config->pg_values,sizeof(char *)* (*cursize));
 	}
-	config->pg_params[rnum+1]=NULL;
-	config->pg_values[rnum+1]=NULL;
+	
+	size_t last_elem=*cursize-1, plast_elem=*cursize-2;
+	
+	config->pg_params[last_elem]=NULL;
+	config->pg_values[last_elem]=NULL;
 	
 	size_t pos=0;
 	for(;conn[pos] != '\0' && conn[pos]!=':';++pos);
 	if(conn[pos]!=':')
 		return 0;
 
-	config->pg_params[rnum]=malloc((pos+2)*sizeof(char));
-	strncpy(config->pg_params[rnum],conn,pos);
-	config->pg_params[rnum][pos]='\0';
+	config->pg_params[plast_elem]=malloc((pos+2)*sizeof(char));
+	strncpy(config->pg_params[plast_elem],conn,pos);
+	config->pg_params[plast_elem][pos]='\0';
 	
-	config->pg_values[rnum]=strdup(conn+pos+1);
+	config->pg_values[plast_elem]=strdup(conn+pos+1);
 	#ifdef DEBUG
-		printf("pg_param: '%s' pg_value: '%s'\n",config->pg_params[rnum],config->pg_values[rnum]);
+		printf("pg_param: '%s' pg_value: '%s'\n",config->pg_params[plast_elem],config->pg_values[plast_elem]);
 	#endif
-	++rnum;
+	
 	return 1;
 }
 

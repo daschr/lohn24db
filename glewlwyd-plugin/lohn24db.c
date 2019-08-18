@@ -165,12 +165,12 @@ json_t * user_module_init(struct config_module * mod_conf, int readonly, json_t 
 		
 	if(json_object_get(j_parameters, "error") == NULL){
 		
-		size_t slen;
+		size_t slen,param_size=0;
 		if((slen=json_string_length(json_object_get(j_parameters, "connectionparams")))){
 			char s[slen+1];
 			strcpy(s,json_string_value(json_object_get(j_parameters, "connectionparams")));
 			for(char *r=strtok(s,";");r != NULL;r=strtok(NULL,";")){
-				if(!parse_pg_param(config,r)){
+				if(!parse_pg_param(&param_size,config,r)){
 					free_config(config);
 					
 					return json_pack("{sis[s]}", "result", G_ERROR_PARAM, "error", 
