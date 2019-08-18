@@ -307,7 +307,9 @@ json_t * user_module_get(struct config_module * config, const char * username, v
 	UNUSED(config);
 	UNUSED(username);
 	UNUSED(cls);
-	return json_pack("{sis{sssOso}}", "result", G_OK, "user", "username", username, "scope", config->profile_scope, "enabled", json_true());
+	if(strcmp("admin",username) == 0)
+		return json_pack("{si s{ ss s[s] so } }", "result", G_ERROR_NOT_FOUND, "user", "username", username, "scope", config->profile_scope, "enabled", json_false());
+	return json_pack("{si s{ ss s[s] so } }", "result", G_OK, "user", "username", username, "scope", config->profile_scope, "enabled", json_true());
 }
 
 /**
