@@ -129,10 +129,8 @@ json_t * user_module_load(struct config_module * config) {
  * 
  */
 int user_module_unload(struct config_module * config) {
-  UNUSED(config);
-
-	y_log_message(Y_LOG_LEVEL_DEBUG, "called unload");
-  return G_OK;
+	UNUSED(config);
+  	return G_OK;
 }
 
 /**
@@ -161,7 +159,6 @@ json_t * user_module_init(struct config_module * mod_conf, int readonly, json_t 
 	UNUSED(readonly);
 	UNUSED(mod_conf);
 
-	y_log_message(Y_LOG_LEVEL_DEBUG, "called init");
 	conf *config=malloc(sizeof(conf));
 
 	json_t * j_return;
@@ -176,9 +173,8 @@ json_t * user_module_init(struct config_module * mod_conf, int readonly, json_t 
 				if(!parse_pg_param(config,r)){
 					free_config(config);
 					
-	y_log_message(Y_LOG_LEVEL_DEBUG, "called connectionparam");
 					return json_pack("{sis[s]}", "result", G_ERROR_PARAM, "error", 
-						"[connectionparams] cannot parse connectionparam");
+						"[user_module_init] cannot parse connectionparam");
 				}
 			}
 			
@@ -189,9 +185,8 @@ json_t * user_module_init(struct config_module * mod_conf, int readonly, json_t 
 			if(strlen(s) > BUFSIZE){
 				free_config(config);
 
-	y_log_message(Y_LOG_LEVEL_DEBUG, "error sql_cmd");
 				return json_pack("{sis[s]}", "result", G_ERROR_PARAM, "error", 
-						"length of sql_cmd too great");
+						"[user_module_init] length of sql_cmd too great");
 			}
 			strncpy(config->sql_cmd,s,BUFSIZE);
 		}
@@ -199,13 +194,11 @@ json_t * user_module_init(struct config_module * mod_conf, int readonly, json_t 
 	
 	}else
 		j_return=json_pack("{sis[s]}", "result", G_ERROR_PARAM, "error", 
-						"Error input parameters");
+						"[user_module_init] error input parameters");
 	
 	if(!connect_db(config))
 		return json_pack("{sis[s]}", "result", G_ERROR_PARAM, "error", 
-						"Could not connect to database");
-	
-
+						"[user_module_init] could not connect to database");
 	
 	*cls=config;	
 	j_return=json_pack("{si}", "result", G_OK);
@@ -228,11 +221,10 @@ json_t * user_module_init(struct config_module * mod_conf, int readonly, json_t 
  * 
  */
 int user_module_close(struct config_module * config, void * cls) {
-  UNUSED(config);
-  y_log_message(Y_LOG_LEVEL_DEBUG, "user_module_close - here");
-  free_config((conf *)cls);
-  y_log_message(Y_LOG_LEVEL_DEBUG, "user_module_close - success");
-  return G_OK;
+	UNUSED(config);
+	free_config((conf *)cls);
+  	y_log_message(Y_LOG_LEVEL_DEBUG, "[user_module_close] success");
+	return G_OK;
 }
 
 /**
@@ -257,7 +249,6 @@ size_t user_module_count_total(struct config_module * config, const char * patte
       	UNUSED(config);
 	UNUSED(pattern);
 	UNUSED(cls);
-	DBG("called count total");
 	return 0;
 }
 
@@ -290,7 +281,6 @@ json_t * user_module_get_list(struct config_module * config, const char * patter
 	UNUSED(offset);
 	UNUSED(limit);
 	UNUSED(cls);
-	DBG("get list...");
 	return json_pack("{sis[]}", "result", G_OK, "list"); 
 }
 
@@ -317,7 +307,6 @@ json_t * user_module_get(struct config_module * config, const char * username, v
 	UNUSED(config);
 	UNUSED(username);
 	UNUSED(cls);
-	DBG("module get");
 	return json_pack("{sis{sssOso}}", "result", G_OK, "user", "username", username, "scope", config->profile_scope, "enabled", json_true());
 }
 
@@ -345,7 +334,6 @@ json_t * user_module_get_profile(struct config_module * config, const char * use
 	UNUSED(config);
 	UNUSED(username);
 	UNUSED(cls);
-	DBG("get profile");
       	return json_pack("{si}", "result", G_ERROR_NOT_FOUND);
 }
 
@@ -380,7 +368,6 @@ json_t * user_module_is_valid(struct config_module * config, const char * userna
 	UNUSED(j_user);
 	UNUSED(mode);
 	UNUSED(cls);
-	DBG("is valid");
 	return json_pack("{si}", "result", G_ERROR_PARAM);
 }
 
@@ -403,7 +390,6 @@ int user_module_add(struct config_module * config, json_t * j_user, void * cls) 
 	UNUSED(config);
 	UNUSED(j_user);
 	UNUSED(cls);
-	DBG("add");
 	return G_ERROR_PARAM;
 }
 
@@ -429,7 +415,6 @@ int user_module_update(struct config_module * config, const char * username, jso
 	UNUSED(username);
 	UNUSED(j_user);
 	UNUSED(cls);
-	DBG("update");
 	return G_ERROR_PARAM;
 }
 
@@ -455,7 +440,6 @@ int user_module_update_profile(struct config_module * config, const char * usern
 	UNUSED(username);
 	UNUSED(j_user);
 	UNUSED(cls);
-	DBG("update profile");
 	return G_ERROR_PARAM;
 }
 
@@ -478,7 +462,6 @@ int user_module_delete(struct config_module * config, const char * username, voi
 	UNUSED(config);
 	UNUSED(username);
 	UNUSED(cls);
-	DBG("mod delete");
 	return G_ERROR_PARAM;
 }
 
@@ -500,7 +483,6 @@ int user_module_delete(struct config_module * config, const char * username, voi
  */
 int user_module_check_password(struct config_module * mod_conf, const char * username, const char * password, void * cls) {
 	conf *config=(conf *) cls;
-	
 
 	char esc_user[512];
 	char esc_user2[512];
@@ -509,7 +491,6 @@ int user_module_check_password(struct config_module * mod_conf, const char * use
 	str_repl(esc_user,512,esc_user2,"'","''");
 
 	return check_password(config,(const char *)esc_user,password) ?  G_OK : G_ERROR_UNAUTHORIZED;
-
 }
 
 /**
