@@ -41,9 +41,9 @@ int parse_pg_param(size_t *cursize, conf *config,char *conn){
 	config->pg_params[plast_elem][pos]='\0';
 	
 	config->pg_values[plast_elem]=strdup(conn+pos+1);
-	#ifdef DEBUG
+#ifdef DEBUG
 		printf("pg_param: '%s' pg_value: '%s'\n",config->pg_params[plast_elem],config->pg_values[plast_elem]);
-	#endif
+#endif
 	
 	return 1;
 }
@@ -67,7 +67,6 @@ void free_config(conf *config){
 }
 
 int str_repl(char *buffer, size_t bufsize,const char *string,const char *tbstring,const char *replstring){
-//        printf("%s | %s | %s \n",string,tbstring,replstring);
 	size_t strpos=0;
         size_t bufferpos=0;
         size_t tbstringl=strlen(tbstring);
@@ -91,34 +90,3 @@ int str_repl(char *buffer, size_t bufsize,const char *string,const char *tbstrin
         return 1;
 }
 
-/*
-void blame(char *f, ...){
-	va_list args;
-	va_start(args,f);
-	
-	vfprintf(stderr,f,args);
-
-	va_end(args); 
-	if(db_connection != NULL)
- 	      PQfinish(db_connection);
-	free_config();
-	exit(EXIT_FAILURE);
-}
-
-json_t *js_blame(char *f, ...){
-	va_list args;
-	va_start(args,f);
-	size_t comp_s=strlen(f);
-	
-	for(size_t i=0;i<sizeof(args)/sizeof(char*);++i)
-		comp_s+=strlen(args[i]);
-	++comp_s;
-	
-	char s[comp_s];
-	vsprintf(s,f,args);
-	json_t js=json_pack("{sis[s]}", "result", G_ERROR_PARAM, "error", s)	
-	
-	va_end(args);
-
-	return s;
-}*/

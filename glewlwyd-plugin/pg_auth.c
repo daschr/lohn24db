@@ -52,9 +52,10 @@ int check_password(conf *config, const char * username, const char * password) {
 	if(!str_repl(cmd_buffer2,BUFSIZE,cmd_buffer1,hash_repl,hash))
 		return 0;
 	
-	#ifdef DEBUG
-		printf("cmd_buffer2: %s\n",cmd_buffer2);
-	#endif
+#ifdef DEBUG
+	printf("cmd_buffer2: %s\n",cmd_buffer2);
+#endif
+
 	PGresult *res=PQexec(config->db_connection,cmd_buffer2);
 	
 	int comp= (res != NULL &&  PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) != 0 );
